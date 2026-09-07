@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wendimnew — Land Administration &amp; Surveying</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #16233d;
+    --navy-deep: #0e1728;
+    --gold: #c9a227;
+    --parchment: #f6f2e8;
+    --parchment-line: #e3dbc7;
+    --charcoal: #2a2a28;
+    --soil: #8b5e34;
+    --sage: #6b7b5e;
+    --white: #fffdf8;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--parchment);
+    color:var(--charcoal);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3{
+    font-family:'Lora', serif;
+    margin:0;
+    color:var(--navy);
+    font-weight:600;
+  }
+  a{color:inherit;}
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- Coordinate grid background ---------- */
+  .grid-bg{
+    background-image:
+      linear-gradient(var(--parchment-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--parchment-line) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    background:var(--navy);
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(201,162,39,0.10) 0%, transparent 45%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 44px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 44px);
+    color:var(--white);
+    padding:76px 0 64px;
+    position:relative;
+  }
+  .coord-label{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12px;
+    letter-spacing:0.04em;
+    color:rgba(255,255,255,0.5);
+    margin-bottom:22px;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:32px;
+    align-items:center;
+  }
+  .hero h1{
+    color:var(--white);
+    font-size:44px;
+    line-height:1.15;
+    letter-spacing:-0.01em;
+  }
+  .hero .role{
+    font-size:19px;
+    color:var(--gold);
+    margin-top:10px;
+    font-family:'Lora', serif;
+    font-style:italic;
+  }
+  .hero .loc{
+    margin-top:18px;
+    font-size:14.5px;
+    color:rgba(255,255,255,0.72);
+  }
+  .hero .loc svg{vertical-align:-2px; margin-right:6px;}
+
+  .photo-frame{
+    width:140px;
+    height:140px;
+    border:2px solid var(--gold);
+    padding:6px;
+    flex-shrink:0;
+  }
+  .photo-frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    filter:grayscale(15%);
+  }
+  .photo-placeholder{
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.06);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,0.35);
+    font-size:11px;
+    text-align:center;
+    padding:8px;
+    border:1px dashed rgba(255,255,255,0.25);
+  }
+
+  .hero-links{
+    margin-top:28px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .hero-links a{
+    text-decoration:none;
+    font-size:14px;
+    padding:9px 18px;
+    border:1px solid rgba(255,255,255,0.3);
+    color:var(--white);
+    transition:border-color .15s, background .15s;
+  }
+  .hero-links a.primary{
+    background:var(--gold);
+    color:var(--navy-deep);
+    border-color:var(--gold);
+    font-weight:600;
+  }
+  .hero-links a:hover{border-color:var(--gold);}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:56px 0;}
+  .section-head{
+    display:grid;
+    grid-template-columns: 90px 1fr;
+    gap:18px;
+    align-items:baseline;
+    margin-bottom:32px;
+  }
+  .bm{ /* benchmark marker, surveyor's triangle */
+    color:var(--soil);
+    font-size:13px;
+    letter-spacing:0.03em;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .bm svg{flex-shrink:0;}
+  .section-head h2{font-size:26px;}
+  .rule{
+    height:1px;
+    background:var(--parchment-line);
+    margin:0 0 32px;
+  }
+
+  /* About */
+  .about-text{max-width:640px; font-size:16px;}
+  .about-text p{margin:0 0 16px;}
+
+  .stat-row{
+    display:flex;
+    gap:36px;
+    margin-top:30px;
+    flex-wrap:wrap;
+  }
+  .stat{border-left:2px solid var(--gold); padding-left:14px;}
+  .stat .num{font-family:'Lora',serif; font-size:26px; color:var(--navy); font-weight:600;}
+  .stat .label{font-size:12.5px; color:#6b6b64; margin-top:2px;}
+
+  /* Education / timeline */
+  .timeline-item{
+    display:grid;
+    grid-template-columns: 130px 1fr;
+    gap:18px;
+    padding:18px 0;
+    border-top:1px solid var(--parchment-line);
+  }
+  .timeline-item:first-of-type{border-top:none;}
+  .timeline-date{
+    font-size:13px;
+    color:var(--soil);
+    font-weight:500;
+    padding-top:2px;
+  }
+  .timeline-body h3{font-size:17px;}
+  .timeline-body .place{font-size:14px; color:#5c5c54; margin-top:2px;}
+  .timeline-body .detail{font-size:14.5px; margin-top:8px; color:var(--charcoal);}
+
+  /* Skills */
+  .skills-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:28px 40px;
+  }
+  .skill-group h3{
+    font-size:14px;
+    text-transform:none;
+    color:var(--soil);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    margin-bottom:10px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--parchment-line);
+  }
+  .skill-list{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 10px;
+  }
+  .skill-list li{
+    font-size:13.5px;
+    padding:5px 12px;
+    background:var(--white);
+    border:1px solid var(--parchment-line);
+    color:var(--navy);
+  }
+
+  /* Projects */
+  .project{
+    padding:24px 0;
+    border-top:1px solid var(--parchment-line);
+  }
+  .project:first-of-type{border-top:none;}
+  .project h3{font-size:18px;}
+  .project .tag{
+    display:inline-block;
+    font-size:11.5px;
+    color:var(--sage);
+    border:1px solid var(--sage);
+    padding:2px 9px;
+    margin-top:8px;
+    margin-right:6px;
+  }
+  .project p{font-size:15px; margin:12px 0 0; max-width:680px;}
+
+  /* Contact */
+  .contact-band{
+    background:var(--navy);
+    color:var(--white);
+    padding:52px 0 60px;
+  }
+  .contact-band h2{color:var(--white); font-size:26px;}
+  .contact-band .sub{color:rgba(255,255,255,0.65); margin-top:8px; font-size:15px; max-width:480px;}
+  .contact-list{
+    margin-top:28px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .contact-list a{
+    text-decoration:none;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--white);
+    width:fit-content;
+    border-bottom:1px solid transparent;
+  }
+  .contact-list a:hover{border-bottom-color:var(--gold);}
+  .contact-list svg{flex-shrink:0; color:var(--gold);}
+
+  footer{
+    text-align:center;
+    font-size:12.5px;
+    color:#8a8578;
+    padding:22px 0;
+    background:var(--parchment);
+  }
+
+  @media (max-width: 620px){
+    .hero-grid{grid-template-columns:1fr; text-align:left;}
+    .photo-frame{order:-1; margin-bottom:8px;}
+    .hero h1{font-size:32px;}
+    .section-head{grid-template-columns:1fr; gap:6px;}
+    .skills-grid{grid-template-columns:1fr;}
+    .timeline-item{grid-template-columns:1fr; gap:4px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="coord-label">MOTTA · EAST GOJJAM · AMHARA REGION, ETHIOPIA</div>
+    <div class="hero-grid">
+      <div>
+        <h1>Wendimnew</h1>
+        <div class="role">Land Administration &amp; Surveying Graduate</div>
+        <div class="loc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Motta Town, East Gojjam Zone, Amhara Region
+        </div>
+        <div class="hero-links">
+          <a href="#projects" class="primary">View my work</a>
+          <a href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="photo-frame">
+        <img src="photo.jpg" alt="Portrait of Wendimnew">
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="bm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L22 20 L2 20 Z"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+        01
+      </div>
+      <h2>About</h2>
+    </div>
+    <div class="about-text">
+      <p>I recently completed a BSc in Land Administration and Surveying at the Institute of Land Administration, Bahir Dar University, graduating with a CGPA of 3.75/4.00. My focus areas include land tenure security, cadastral systems, GIS and surveying, and the gender dimensions of land administration in Ethiopia.</p>
+      <p>During my field attachment, I worked directly inside a woreda land administration office — applying classroom knowledge to real cadastral records, parcel data, and land certification workflows. I'm currently looking for opportunities in land administration, surveying, and property valuation.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">3.75</div><div class="label">CGPA / 4.00</div></div>
+      <div class="stat"><div class="num">83</div><div class="label">National Exit Exam / 100</div></div>
+      <div class="stat"><div class="num">45</div><div class="label">Days of Field Attachment</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="rule wrap"></div>
+
+<section id="education">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="bm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L22 20 L2 20 Z"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+        02
+      </div>
+      <h2>Education</h2>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2026</div>
+      <div class="timeline-body">
+        <h3>BSc, Land Administration and Surveying</h3>
+        <div class="place">Institute of Land Administration, Bahir Dar University</div>
+        <div class="detail">CGPA: 3.75/4.00 · National Exit Exam: 83/100. Thesis successfully defended in May 2026 with positive examiner feedback.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">Entrance</div>
+      <div class="timeline-body">
+        <h3>University Entrance Examination</h3>
+        <div class="place">Mekdela Amba University · Tikimt 2015 E.C.</div>
+        <div class="detail">Score: 374/700</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">Secondary</div>
+      <div class="timeline-body">
+        <h3>Secondary Education</h3>
+        <div class="place">Motta Secondary High School</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">Primary</div>
+      <div class="timeline-body">
+        <h3>Primary Education</h3>
+        <div class="place">Motta Aba Motsa Primary School</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule wrap"></div>
+
+<section id="skills" class="grid-bg">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="bm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L22 20 L2 20 Z"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+        03
+      </div>
+      <h2>Skills &amp; Tools</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h3>GIS &amp; Mapping Software</h3>
+        <ul class="skill-list">
+          <li>QGIS</li>
+          <li>ArcGIS</li>
+          <li>ERDAS Imagine</li>
+          <li>Kebele Digitizer</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Land Records &amp; Cadastral Systems</h3>
+        <ul class="skill-list">
+          <li>NRLAIS</li>
+          <li>ISLA</li>
+          <li>CMMS2</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Field &amp; Survey Equipment</h3>
+        <ul class="skill-list">
+          <li>Total Station</li>
+          <li>GPS Equipment</li>
+          <li>AutoCAD</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h3>Analysis</h3>
+        <ul class="skill-list">
+          <li>SPSS</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule wrap"></div>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="bm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L22 20 L2 20 Z"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+        04
+      </div>
+      <h2>Thesis &amp; Field Work</h2>
+    </div>
+
+    <div class="project">
+      <h3>Impact of the Land Registration and Certification Program (LRCP) on Women's Land Access and Control</h3>
+      <span class="tag">Thesis</span><span class="tag">Chak Kebele, Hulet Eju Enessie Woreda</span>
+      <p>Examined how second-level land certification (SLLC) has affected women's tenure security and decision-making power over land, incorporating Proclamation No. 1324/2024. Analyzed survey data from 50 respondents using SPSS, finding high SLLC coverage, perceived improvements in tenure security, and statistically significant results linking land certification to household decision-making and marital status outcomes. Successfully defended in May 2026.</p>
+    </div>
+
+    <div class="project">
+      <h3>Field Attachment — Woreda Land Administration Office</h3>
+      <span class="tag">45-day externship</span><span class="tag">Hulet Eju Enessie Woreda</span>
+      <p>Worked hands-on with cadastral tools and land records systems (QGIS, NRLAIS, ISLA, Kebele Digitizer, CMMS2) inside a functioning land administration office. Produced a formal internship report covering tools used, tasks completed, and challenges encountered in day-to-day land administration work.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact-band">
+  <div class="wrap">
+    <h2>Let's work together</h2>
+    <div class="sub">Open to roles in land administration, surveying, and property valuation. Reach out below.</div>
+    <div class="contact-list">
+      <a href="mailto:your.email@example.com">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
+        your.email@example.com
+      </a>
+      <a href="tel:+251900000000">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +251 9XX XXX XXX
+      </a>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        linkedin.com/in/yourprofile
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Wendimnew · Motta, Amhara Region, Ethiopia
+</footer>
+
+</body>
+</html>
